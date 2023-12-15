@@ -3,7 +3,11 @@ package com.github.pashmentov96.reader;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
+
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
@@ -17,12 +21,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
-public class ClickableTextView extends android.support.v7.widget.AppCompatTextView {
+public class ClickableTextView extends androidx.appcompat.widget.AppCompatTextView {
     public ClickableTextView(Context context) {
         super(context);
     }
@@ -90,8 +97,9 @@ public class ClickableTextView extends android.support.v7.widget.AppCompatTextVi
                     new AsyncTask<Void, Void, String>() {
                         @Override
                         protected void onPostExecute(String s) {
+                            Log.d("MyLogs", "json1 = " + s);
                             translationOfWord.setText(parseFromJson(s));
-                            Log.d("MyLogs", "json = " + s);
+                            Log.d("MyLogs", "json2 = " + s);
                         }
 
                         @Override
@@ -109,45 +117,54 @@ public class ClickableTextView extends android.support.v7.widget.AppCompatTextVi
             };
         }
 
-        private String parseFromJson(String json) {
-            try {
-                JSONObject jsonObject = new JSONObject(json);
-                return jsonObject.getJSONArray("text").get(0).toString();
-            } catch (JSONException e) {
-                return "Error";
-            }
+
+private String parseFromJson(String json) {
+    try {
+        JSONObject jsonObject = new JSONObject(json);
+        return jsonObject.getJSONObject("data")
+                .getJSONArray("translations")
+                .getJSONObject(0)
+                .getString("translatedText");
+    } catch (JSONException e) {
+        return "Error1: " + e.getMessage();
+    }
+}
+
+private String translate(String word) {
+    String apiKey = "adfa376021msh7427a12a06b92fcp15d25ajsnb5e62b5468d3";
+    try {
+        String urlParameters = "q=" + URLEncoder.encode(word, "UTF-8") + "&target=ru&source=en";
+        byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
+
+        URL url = new URL("https://google-translate1.p.rapidapi.com/language/translate/v2");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        conn.setDoOutput(true);
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setRequestProperty("Accept-Encoding", "application/gzip");
+        conn.setRequestProperty("X-RapidAPI-Key", apiKey);
+        conn.setRequestProperty("X-RapidAPI-Host", "google-translate1.p.rapidapi.com");
+
+        try(DataOutputStream wr = new DataOutputStream(conn.getOutputStream())) {
+            wr.write(postData);
         }
 
-        private String translate(String word) {
-            String key = "trnsl.1.1.20190531T071741Z.3ddfb9a0422e3948.53a88c2bd5fb9d0ef621d39e03e76ca81ddaf681";
-            HttpURLConnection connection = null;
-            try {
-                URL url = new URL("https://translate.yandex.net/api/v1.5/tr.json/translate?lang=en-ru&key=" + key + "&text=" + word);
-                Log.d("MyLogs", "URL = " + url);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setDoOutput(true);
-
-                Log.d("MyLogs", "Code " + connection.getResponseCode() + "; " + "Message " + connection.getResponseMessage());
-                InputStream content = connection.getInputStream();
-                BufferedReader in =
-                        new BufferedReader (new InputStreamReader(content));
-
-                StringBuilder stringBuilder = new StringBuilder();
-                String line;
-                while ((line = in.readLine()) != null) {
-                    stringBuilder.append(line + "\n");
-                }
-                return stringBuilder.toString();
-            } catch(Exception e) {
-                e.printStackTrace();
-                return "Error";
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
+        InputStream response = conn.getInputStream();
+        StringBuilder sb = new StringBuilder();
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(response))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
             }
         }
+        Log.d("MyLogs", "Response: " + sb.toString());
+        return sb.toString();
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "Error: " + e.getMessage();
+    }
+}
 
 
         /**

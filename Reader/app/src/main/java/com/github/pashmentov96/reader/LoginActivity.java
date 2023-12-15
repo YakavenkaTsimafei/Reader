@@ -1,17 +1,38 @@
+
 package com.github.pashmentov96.reader;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import android.text.method.LinkMovementMethod;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,96 +43,77 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends AppCompatActivity {
+    final int REQUEST_READ_EXTERNAL_STORAGE = 5;
+    private TextView textView;
+    private GoogleSignInClient client;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        int permissionCheck = ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        Log.d("MyLogs", "Check for READ_EXTERNAL_STORAGE permission: " + (permissionCheck == PackageManager.PERMISSION_GRANTED));
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_EXTERNAL_STORAGE);
+        }
 
-        TextView noRegistration = findViewById(R.id.hint_registration);
-        noRegistration.setMovementMethod(LinkMovementMethod.getInstance());
+        textView = findViewById(R.id.singInWithGoogle);
+        GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        client = GoogleSignIn.getClient(this, options);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = client.getSignInIntent();
+                startActivityForResult(i, 1234);
+            }
+        });
 
-        TextView textWrongLogin = findViewById(R.id.textWrongLogin);
-        textWrongLogin.setVisibility(View.INVISIBLE);
-
-        Button submit = findViewById(R.id.submit);
-        submit.setOnClickListener(this);
     }
 
-    @SuppressLint("StaticFieldLeak")
     @Override
-    public void onClick(final View v) {
-        final TextView login = findViewById(R.id.login);
-        final TextView password = findViewById(R.id.password);
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1234) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
 
-        final String textLogin = login.getText().toString();
-        final String textPassword = password.getText().toString();
-        final TextView textWrongLogin = findViewById(R.id.textWrongLogin);
+                AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+                FirebaseAuth.getInstance().signInWithCredential(credential)
+                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                    startActivity(intent);
 
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... voids) {
-                return loadToken(textLogin, textPassword);
+
+                                } else {
+                                    Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+                        });
+
+            } catch (ApiException e) {
+                e.printStackTrace();
             }
 
-            @Override
-            protected void onPostExecute(String s) {
-                Log.d("MyLogs", "token + " + s);
-                if (s.equals("Error")) {
-                    textWrongLogin.setVisibility(View.VISIBLE);
-                    login.setText("");
-                    password.setText("");
-                } else {
-                    Intent intent = new Intent();
-                    intent.putExtra("token", s);
-                    setResult(RESULT_OK, intent);
-                    finish();
-                }
-            }
-        }.execute();
+        }
+
     }
 
-    private String parseTokenFromJson(String json) {
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            return jsonObject.getString("token");
-        } catch (JSONException e) {
-            return "Error";
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         }
     }
-
-    private String loadToken(String login, String password) {
-        HttpURLConnection connection = null;
-        try {
-            URL url = new URL("http://d6719ff8.ngrok.io/api/tokens");
-            String encoding = new String(Base64.encode((login + ":" + password).getBytes("UTF-8"), Base64.DEFAULT));
-
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setRequestProperty  ("Authorization", "Basic " + encoding);
-
-            Log.d("MyLogs", "Code " + connection.getResponseCode() + "; " + "Message " + connection.getResponseMessage());
-
-            InputStream content = connection.getInputStream();
-            BufferedReader in =
-                    new BufferedReader (new InputStreamReader(content));
-
-            StringBuilder stringBuilder = new StringBuilder();
-            String line;
-            while ((line = in.readLine()) != null) {
-                stringBuilder.append(line + "\n");
-            }
-            return parseTokenFromJson(stringBuilder.toString());
-        } catch(Exception e) {
-            e.printStackTrace();
-            return "Error";
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-    }
-
 }

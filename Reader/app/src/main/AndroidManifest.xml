@@ -13,20 +13,20 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".MainActivity">
+        <activity android:name=".LoginActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MainActivity"/>
         <activity android:name=".ScreenSlidePagerActivity"
-            android:label="Reader"
+            android:label="LinguaLib"
             android:parentActivityName=".MainActivity"/>
-        <activity android:name=".LoginActivity"
-            android:label="Login"/>
         <activity android:name=".WordlistActivity"
-            android:label="Wordlist"
+            android:label="LinguaLib"
             android:parentActivityName=".MainActivity"/>
         <activity android:name=".SettingsActivity"
             android:label="@string/settings"

@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Reader</string>
+    <string name="app_name">LinguaLib</string>
+    <string name="default_web_client_id">1234</string>
     <string name="no_registration">Don\'t have account? Register <a href = "http://d6719ff8.ngrok.io/register">here</a></string>
     <string name="wrong_login">Wrong login or password. Please, try again. </string>
     <string name="login">Login</string>
@@ -25,9 +26,9 @@
     <string name="about_text">This application helps you to read e-books on English language.
         You can know the translation of each word by clicking on desired word. Also it is available to add unknown words to your wordlist.
         \nAvailable formats of books: epub</string>
-    <string name="about_developers">Developers are 4th year students at MIPT:
-        \n-Karazeev Anton
-        \n-Pashmentov Nikita
+    <string name="about_developers">Developers is Yakavenka :
+        \n- the project is based on https://github.com/akarazeev/Reader
     </string>
     <string name="about_site">Also try our <a href="http://d6719ff8.ngrok.io">site</a></string>
+    <string name="sing_in_with_google">Sing in with Google</string>
 </resources>

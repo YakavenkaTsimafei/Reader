@@ -13,10 +13,9 @@ public class PathUtils {
 
     public static String getPath(final Context context, final Uri uri) {
 
-        // DocumentProvider
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, uri)) {
 
-            if (isExternalStorageDocument(uri)) {// ExternalStorageProvider
+            if (isExternalStorageDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 final String type = split[0];
@@ -39,7 +38,7 @@ public class PathUtils {
                     return System.getenv(storageDefinition) + "/" + split[1];
                 }
 
-            } else if (isDownloadsDocument(uri)) {// DownloadsProvider
+            } else if (isDownloadsDocument(uri)) {
 
                 final String id = DocumentsContract.getDocumentId(uri);
                 final Uri contentUri = ContentUris.withAppendedId(
@@ -47,7 +46,7 @@ public class PathUtils {
 
                 return getDataColumn(context, contentUri, null, null);
 
-            } else if (isMediaDocument(uri)) {// MediaProvider
+            } else if (isMediaDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 final String type = split[0];
@@ -71,7 +70,6 @@ public class PathUtils {
 
         } else if ("content".equalsIgnoreCase(uri.getScheme())) {// MediaStore (and general)
 
-            // Return the remote address
             if (isGooglePhotosUri(uri))
                 return uri.getLastPathSegment();
 

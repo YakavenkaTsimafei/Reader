@@ -2,12 +2,32 @@ package com.github.pashmentov96.reader;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,13 +38,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import cz.msebera.android.httpclient.HttpResponse;
-import cz.msebera.android.httpclient.client.HttpClient;
-import cz.msebera.android.httpclient.client.methods.HttpGet;
-import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
-import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class WordlistActivity extends AppCompatActivity {
+
+    private TextView myDictionary;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,30 +54,11 @@ public class WordlistActivity extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        final TextView myDictionary = findViewById(R.id.myDictionary);
-
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... voids) {
-                return loadWordlist();
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                Log.d("MyLogs", "Wordlist + " + s);
-                if (s != null && (s.length() < 5 || !s.substring(0, 5).equals("Error"))) {
-                    Map<String, String> dictionary = parseWordlistFromJson(s);
-                    StringBuilder stringBuilder = new StringBuilder();
-                    for (String key : dictionary.keySet()) {
-                        stringBuilder.append(key + " - " + dictionary.get(key) + "\n");
-                    }
-                    if (stringBuilder.length() != 0) {
-                        myDictionary.setText(stringBuilder.toString());
-                    }
-                }
-            }
-        }.execute();
+        myDictionary = findViewById(R.id.myDictionary);
+         myDictionary.setMovementMethod(LinkMovementMethod.getInstance());
+        loadWordlist();
     }
+
 
     private Map<String, String> parseWordlistFromJson(String json) {
         try {
@@ -70,7 +68,7 @@ public class WordlistActivity extends AppCompatActivity {
             while (keys.hasNext()) {
                 String key = keys.next();
                 String value = jsonObject.getString(key);
-                Log.d("Wordlist", key + ": " + value);
+                Log.d("Wordlist1", key + ": " + value);
                 wordlist.put(key, value);
             }
             return wordlist;
@@ -79,27 +77,130 @@ public class WordlistActivity extends AppCompatActivity {
         }
     }
 
-    private String loadWordlist() {
-        SomePreferences somePreferences = new SomePreferences(this);
-        String token = somePreferences.getToken();
-        Log.d("MyLogs", "TOKEN = " + token);
-        try {
+//    private void loadWordlist() {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("Words").document("Translate")
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            DocumentSnapshot document = task.getResult();
+//                            if (document.exists()) {
+//                                Log.d("MainActivity14", "DocumentSnapshot data: " + document.getData());
+//                                String json = document.getData().toString();
+//                                Map<String, String> dictionary = parseWordlistFromJson(json);
+//                                StringBuilder stringBuilder = new StringBuilder();
+//                                for (String key : dictionary.keySet()) {
+//                                    stringBuilder.append(key + " - " + dictionary.get(key) + "\n");
+//                                }
+//                                if (stringBuilder.length() != 0) {
+//                                    myDictionary.setText(stringBuilder.toString());
+//                                }
+//                            } else {
+//                                Log.d("MainActivity", "No such document");
+//                            }
+//                        } else {
+//                            Log.d("MainActivity", "get failed with ", task.getException());
+//                        }
+//                    }
+//                });
+//    }
+//private void loadWordlist() {
+//    FirebaseFirestore db = FirebaseFirestore.getInstance();
+//    db.collection("Words").document("Translate")
+//            .get()
+//            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                @Override
+//                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                    if (task.isSuccessful()) {
+//                        DocumentSnapshot document = task.getResult();
+//                        if (document.exists()) {
+//                            Log.d("MainActivity14", "DocumentSnapshot data: " + document.getData());
+//                            String json = document.getData().toString();
+//                            Map<String, String> dictionary = parseWordlistFromJson(json);
+//                            SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+//                            for (String key : dictionary.keySet()) {
+//                                String word = key + " - " + dictionary.get(key) + "\n";
+//                                SpannableString spannableString = new SpannableString(word);
+//                                ClickableSpan clickableSpan = new ClickableSpan() {
+//                                    @Override
+//                                    public void onClick(@NonNull View widget) {
+//                                        Log.d("ClickedWord", key);
+//                                    }
+//                                };
+//                                spannableString.setSpan(clickableSpan, 0, key.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                                stringBuilder.append(spannableString);
+//                            }
+//                            if (stringBuilder.length() != 0) {
+//                                myDictionary.setText(stringBuilder, TextView.BufferType.SPANNABLE);
+//                            }
+//                        } else {
+//                            Log.d("MainActivity", "No such document");
+//                        }
+//                    } else {
+//                        Log.d("MainActivity", "get failed with ", task.getException());
+//                    }
+//                }
+//            });
+//}
+private void loadWordlist() {
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    db.collection("Words").document("Translate")
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Log.d("MainActivity14", "DocumentSnapshot data: " + document.getData());
+                            String json = document.getData().toString();
+                            Map<String, String> dictionary = parseWordlistFromJson(json);
+                            SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
+                            for (String key : dictionary.keySet()) {
+                                String word = key + " - " + dictionary.get(key) + "\n";
+                                SpannableString spannableString = new SpannableString(word);
+                                ClickableSpan clickableSpan = new ClickableSpan() {
+                                    @Override
+                                    public void onClick(@NonNull View widget) {
+                                        Log.d("ClickedWord", key);
+                                        deleteWordFromFirebase(key);
+                                    }
+                                };
+                                spannableString.setSpan(clickableSpan, 0, key.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                stringBuilder.append(spannableString);
+                            }
+                            if (stringBuilder.length() != 0) {
+                                myDictionary.setText(stringBuilder, TextView.BufferType.SPANNABLE);
+                            }
+                        } else {
+                            Log.d("MainActivity", "No such document");
+                        }
+                    } else {
+                        Log.d("MainActivity", "get failed with ", task.getException());
+                    }
+                }
+            });
+}
 
-            HttpClient httpclient = HttpClientBuilder.create().build();
-            HttpGet httpGet = new HttpGet("http://d6719ff8.ngrok.io/api/wordlist");
-            httpGet.addHeader("Authorization", "Bearer " + token);
-            HttpResponse response = httpclient.execute(httpGet);
-            int responseCode = response.getStatusLine().getStatusCode();
-            Log.d("MyLogs", "Code " + responseCode);
-
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                return "Error connection";
-            } else {
-                String stringResponse = EntityUtils.toString(response.getEntity());
-                return stringResponse;
-            }
-        } catch (IOException ex) {
-            return "Error " + ex.getMessage();
-        }
+    private void deleteWordFromFirebase(String wordToDelete) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Words").document("Translate")
+                .update(wordToDelete, FieldValue.delete())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("MainActivity", "Word successfully deleted!");
+                        // Здесь можете обновить интерфейс или загрузить данные заново после удаления слова
+                        loadWordlist();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("MainActivity", "Error deleting word", e);
+                    }
+                });
     }
 }

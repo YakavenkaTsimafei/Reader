@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Reader</string>
+    <string name="app_name">LinguaLib</string>
     <string name="no_registration">Нет аккаунта? Регистрируйся <a href = "http://d6719ff8.ngrok.io/register">здесь</a></string>
     <string name="wrong_login">Неправильный логин или пароль. Попробуйте еще раз. </string>
     <string name="login">Войти</string>
@@ -26,9 +26,9 @@
     <string name="about_text">Это приложение поможет Вам при чтении электронных книг на английском языке.
         Вы можете узнать перевод каждого слова, кликнув на нужное слово. Также доступно добавление незнакомых слов в личный словарь.
         \nДоступные форматы книг: epub</string>
-    <string name="about_developers">Разработчики - студенты 4-го курса МФТИ:
-        \n-Каразеев Антон
-        \n-Пашментов Никита
+    <string name="about_developers">Разработчик - Яковенко
+        \n проект создан на основе https://github.com/akarazeev/Reader
+
     </string>
     <string name="about_site">Также можете попробовать наш <a href="http://d6719ff8.ngrok.io">сайт</a></string>
 </resources>
