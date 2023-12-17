@@ -77,73 +77,7 @@ public class WordlistActivity extends AppCompatActivity {
         }
     }
 
-//    private void loadWordlist() {
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        db.collection("Words").document("Translate")
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            DocumentSnapshot document = task.getResult();
-//                            if (document.exists()) {
-//                                Log.d("MainActivity14", "DocumentSnapshot data: " + document.getData());
-//                                String json = document.getData().toString();
-//                                Map<String, String> dictionary = parseWordlistFromJson(json);
-//                                StringBuilder stringBuilder = new StringBuilder();
-//                                for (String key : dictionary.keySet()) {
-//                                    stringBuilder.append(key + " - " + dictionary.get(key) + "\n");
-//                                }
-//                                if (stringBuilder.length() != 0) {
-//                                    myDictionary.setText(stringBuilder.toString());
-//                                }
-//                            } else {
-//                                Log.d("MainActivity", "No such document");
-//                            }
-//                        } else {
-//                            Log.d("MainActivity", "get failed with ", task.getException());
-//                        }
-//                    }
-//                });
-//    }
-//private void loadWordlist() {
-//    FirebaseFirestore db = FirebaseFirestore.getInstance();
-//    db.collection("Words").document("Translate")
-//            .get()
-//            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                @Override
-//                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                    if (task.isSuccessful()) {
-//                        DocumentSnapshot document = task.getResult();
-//                        if (document.exists()) {
-//                            Log.d("MainActivity14", "DocumentSnapshot data: " + document.getData());
-//                            String json = document.getData().toString();
-//                            Map<String, String> dictionary = parseWordlistFromJson(json);
-//                            SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
-//                            for (String key : dictionary.keySet()) {
-//                                String word = key + " - " + dictionary.get(key) + "\n";
-//                                SpannableString spannableString = new SpannableString(word);
-//                                ClickableSpan clickableSpan = new ClickableSpan() {
-//                                    @Override
-//                                    public void onClick(@NonNull View widget) {
-//                                        Log.d("ClickedWord", key);
-//                                    }
-//                                };
-//                                spannableString.setSpan(clickableSpan, 0, key.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-//                                stringBuilder.append(spannableString);
-//                            }
-//                            if (stringBuilder.length() != 0) {
-//                                myDictionary.setText(stringBuilder, TextView.BufferType.SPANNABLE);
-//                            }
-//                        } else {
-//                            Log.d("MainActivity", "No such document");
-//                        }
-//                    } else {
-//                        Log.d("MainActivity", "get failed with ", task.getException());
-//                    }
-//                }
-//            });
-//}
+
 private void loadWordlist() {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     db.collection("Words").document("Translate")

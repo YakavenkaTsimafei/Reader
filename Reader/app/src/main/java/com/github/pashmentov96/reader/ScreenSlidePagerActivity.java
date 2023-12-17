@@ -116,7 +116,7 @@ public class ScreenSlidePagerActivity extends AppCompatActivity implements View.
         ScreenSlidePageFragment.translationOfWord = translationOfWord;
         textOfBook = getIntent().getStringExtra(ARGUMENT_TEXT);
         arrWords = textOfBook.split(" ");
-        numPages = (arrWords.length + 64) / 65;
+        numPages = (arrWords.length + 69) / 70;
         viewPager = (ViewPager) findViewById(R.id.pager);
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
@@ -153,8 +153,8 @@ public class ScreenSlidePagerActivity extends AppCompatActivity implements View.
 
         @Override
         public Fragment getItem(int position) {
-            int beginIndex = 65 * position;
-            int endIndex = Math.min(beginIndex + 65, arrWords.length);
+            int beginIndex = 70 * position;
+            int endIndex = Math.min(beginIndex + 70, arrWords.length);
             String pageText = String.join(" ", Arrays.copyOfRange(arrWords, beginIndex, endIndex));
             return ScreenSlidePageFragment.newInstance(position, pageText);
         }
@@ -172,43 +172,3 @@ public class ScreenSlidePagerActivity extends AppCompatActivity implements View.
     }
 
 }
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        String TAG = "ScreenSlidePagerActivity";
-//        String KEY_TITLE = "title";
-//        String KEY_DESCRIPTION = "description";
-//        db.collection("Notebook").document("My First Note").set(word)
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        Toast.makeText(ScreenSlidePagerActivity.this, "Note saved", Toast.LENGTH_SHORT).show();
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Toast.makeText(ScreenSlidePagerActivity.this, "Error!", Toast.LENGTH_SHORT).show();
-//                        Log.d(TAG, e.toString());
-//                    }
-//                });
-//        Log.d("Mt log2",word);
-
-//        SomePreferences somePreferences = new SomePreferences(this);
-//        String token = somePreferences.getToken();
-//        HttpURLConnection connection = null;
-//        try {
-//            URL url = new URL("http://d6719ff8.ngrok.io/api/add/" + word);
-//
-//            connection = (HttpURLConnection) url.openConnection();
-//            connection.setRequestMethod("POST");
-//            connection.setDoOutput(true);
-//            connection.setRequestProperty  ("Authorization", "Bearer " + token);
-//
-//            Log.d("MyLogs", "Code " + connection.getResponseCode() + "; " + "Message " + connection.getResponseMessage());
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            if (connection != null) {
-//                connection.disconnect();
-//            }
-//        }
-//        return null;
