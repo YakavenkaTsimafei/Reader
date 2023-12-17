@@ -80,7 +80,7 @@ public class ClickableTextView extends androidx.appcompat.widget.AppCompatTextVi
 
     @Override
     public void scrollTo(int x, int y) {
-        //super.scrollTo(x, y);
+        super.scrollTo(x, y);
     }
 
     public static class ClickableWord {
@@ -131,7 +131,7 @@ private String parseFromJson(String json) {
 }
 
 private String translate(String word) {
-    String apiKey = "adfa376021msh7427a12a06b92fcp15d25ajsnb5e62b5468d3";
+    String apiKey = "dbc9bca317mshf692cfa63415912p15478fjsn501958302cea+";
     try {
         String urlParameters = "q=" + URLEncoder.encode(word, "UTF-8") + "&target=ru&source=en";
         byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);
@@ -167,16 +167,12 @@ private String translate(String word) {
 }
 
 
-        /**
-         * @return the word
-         */
+
         public String getWord() {
             return word;
         }
 
-        /**
-         * @return the clickableSpan
-         */
+
         public ClickableSpan getClickableSpan() {
             return clickableSpan;
         }

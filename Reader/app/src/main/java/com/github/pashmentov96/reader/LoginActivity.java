@@ -55,7 +55,8 @@ public class LoginActivity extends AppCompatActivity {
         int permissionCheck = ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
         Log.d("MyLogs", "Check for READ_EXTERNAL_STORAGE permission: " + (permissionCheck == PackageManager.PERMISSION_GRANTED));
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}
+                    , REQUEST_READ_EXTERNAL_STORAGE);
         }
 
         textView = findViewById(R.id.singInWithGoogle);
@@ -73,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
