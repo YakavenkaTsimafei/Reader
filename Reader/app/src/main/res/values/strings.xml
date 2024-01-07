@@ -26,7 +26,7 @@
     <string name="about_text">This application helps you to read e-books on English language.
         You can know the translation of each word by clicking on desired word. Also it is available to add unknown words to your wordlist.
         \nAvailable formats of books: epub</string>
-    <string name="about_developers">Developers is Yakavenka :
+    <string name="about_developers">It was developed by Timofey Yakavenka, a student of the MC-32 group :
         \n- the project is based on https://github.com/akarazeev/Reader
     </string>
     <string name="about_site">Also try our <a href="http://d6719ff8.ngrok.io">site</a></string>

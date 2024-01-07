@@ -20,7 +20,9 @@ public class ScreenSlidePageFragment extends Fragment {
     public static ScreenSlidePageFragment newInstance(int page, String textOfPage) {
         ScreenSlidePageFragment screenSlidePageFragment = new ScreenSlidePageFragment();
         Bundle arguments = new Bundle();
+        // Добавление номера страницы и текста страницы в аргументы
         arguments.putInt(ARGUMENT_PAGE_NUMBER, page);
+        // Установка аргументов для фрагмента
         arguments.putString(ARGUMENT_PAGE_TEXT, textOfPage);
         screenSlidePageFragment.setArguments(arguments);
         return screenSlidePageFragment;
@@ -29,6 +31,7 @@ public class ScreenSlidePageFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Извлечение номера страницы и текста страницы из аргументов
         pageNumber = getArguments().getInt(ARGUMENT_PAGE_NUMBER);
         text = getArguments().getString(ARGUMENT_PAGE_TEXT);
     }
@@ -42,6 +45,7 @@ public class ScreenSlidePageFragment extends Fragment {
 
         translationOfWord.setText("");
 
+        // Установка текста для страницы
         page.setText(text);
 
         Log.d("Pages", pageNumber + ": " + text);

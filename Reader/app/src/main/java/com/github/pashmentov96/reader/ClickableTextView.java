@@ -71,7 +71,9 @@ public class ClickableTextView extends androidx.appcompat.widget.AppCompatTextVi
 
         if (idx1 != -1) {
             int idx2 = str.length();
+            // Создание нового кликабельного слова из подстроки
             ClickableWord clickableWord = new ClickableWord(str.substring(idx1, idx2), color, translationOfWord);
+            // Установка кликабельного спана для этого слова в SpannableStringBuilder
             ssb.setSpan(clickableWord.getClickableSpan(), idx1, idx2, 0);
         }
 
@@ -96,16 +98,18 @@ public class ClickableTextView extends androidx.appcompat.widget.AppCompatTextVi
                     Log.d("MyLogs", "Click on " + word);
                     new AsyncTask<Void, Void, String>() {
                         @Override
+                        // Метод, который выполняется после завершения задачи в фоновом потоке
                         protected void onPostExecute(String s) {
                             Log.d("MyLogs", "json1 = " + s);
                             translationOfWord.setText(parseFromJson(s));
                             Log.d("MyLogs", "json2 = " + s);
                         }
-
+                        // Метод, который выполняет задачу в фоновом потоке
                         @Override
                         protected String doInBackground(Void... voids) {
                             return translate(word);
                         }
+                        // Запуск задачи
                     }.execute();
                 }
 
@@ -131,7 +135,8 @@ private String parseFromJson(String json) {
 }
 
 private String translate(String word) {
-    String apiKey = "dbc9bca317mshf692cfa63415912p15478fjsn501958302cea+";
+            //08d2f05037msh29da5ca5f0856e8p141676jsn71f9128eafc7
+    String apiKey = "a3bb99ac5amshaf9c96eb11a1774p16e367jsne82fcd55a490";
     try {
         String urlParameters = "q=" + URLEncoder.encode(word, "UTF-8") + "&target=ru&source=en";
         byte[] postData = urlParameters.getBytes(StandardCharsets.UTF_8);

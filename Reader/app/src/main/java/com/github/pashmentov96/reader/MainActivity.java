@@ -261,6 +261,7 @@ public class MainActivity extends AppCompatActivity {
                     stringBuilder.append(line + " ");
                     //Log.d("Book", line);
                 }
+                // Далее можно работать с переменной textOfBook, содержащей весь текст книги
                 textOfBook = stringBuilder.toString();
             } catch (IOException e) {
 
